@@ -19,8 +19,29 @@
 #               Read attributes and sensor data
 
 
+#  ____  ____      _    __  __  ____ ___
+# |  _ \|  _ \    / \  |  \/  |/ ___/ _ \
+# | | | | |_) |  / _ \ | |\/| | |  | | | |
+# | |_| |  _ <  / ___ \| |  | | |__| |_| |
+# |____/|_| \_\/_/   \_\_|  |_|\____\___/
+#                           research group
+#                             dramco.be/
+#
+#  KU Leuven - Technology Campus Gent,
+#  Gebroeders De Smetstraat 1,
+#  B-9000 Gent, Belgium
+#
+#         File: example.ext
+#      Created: 2025-06-30
+#       Author: Jarne Van Mulders
+#      Version: 0.1
+#
+#  Description: Communicate with chassis Keysight P5024A VNA
+
+
 import ctypes
 from visatype import *
+from chassis import *
 
 KTPUSBCHASSIS_ATTR_SPECIFIC_DRIVER_PREFIX           = 1050302
 KTPUSBCHASSIS_ATTR_SPECIFIC_DRIVER_REVISION         = 1050551
@@ -34,13 +55,17 @@ KTPUSBCHASSIS_ATTR_FW_UP_TO_DATE                    = 1150021
 
 KTPUSBCHASSIS_ATTR_FAN_COUNT                        = 1150010
 KTPUSBCHASSIS_ATTR_FAN_RPM                          = 1150013
-KTPUSBCHASSIS_ATTR_FAN_ALARM_OCCURRED               = 1150011
 
 KTPUSBCHASSIS_ATTR_TEMPERATURE_SENSOR_COUNT         = 1150017
 KTPUSBCHASSIS_ATTR_TEMPERATURE                      = 1150018
 
 KTPUSBCHASSIS_ATTR_VOLTAGE_RAIL_COUNT               = 1150022
 KTPUSBCHASSIS_ATTR_VOLTAGE                          = 1150024
+
+KTPUSBCHASSIS_ATTR_FAN_ALARM_OCCURRED               = 1150011
+KTPUSBCHASSIS_ATTR_REFCLK_ALARM_OCCURRED            = 1150016
+KTPUSBCHASSIS_ATTR_TEMPERATURE_ALARM_OCCURRED       = 1150019
+# KTPUSBCHASSIS_ATTR_VOLTAGE_ALARM_OCCURRED           = 1150023
 
 # Load the DLL
 tkDLL = ctypes.cdll.LoadLibrary(r"C:\Program Files\IVI Foundation\IVI\Bin\KtPUsbChassis_64.dll")
@@ -75,7 +100,8 @@ def get_attr_boolean(attribute_id):
     result = ViBoolean()
     status = tkDLL.KtPUsbChassis_GetAttributeViBoolean(session, b"", attribute_id, ctypes.byref(result))
     assert status == 0, f"Fout bij ophalen boolean attribuut {attribute_id}: {status}"
-    return result.value == VI_TRUE
+    # print(result.value)
+    return result.value == 1
 
 # Read and output a few attributes
 print(f"DRIVER_PREFIX:       {get_attr_string(KTPUSBCHASSIS_ATTR_SPECIFIC_DRIVER_PREFIX)}")
@@ -85,7 +111,13 @@ print(f"DRIVER_DESCRIPTION:  {get_attr_string(KTPUSBCHASSIS_ATTR_SPECIFIC_DRIVER
 print(f"INSTRUMENT_MODEL:    {get_attr_string(KTPUSBCHASSIS_ATTR_INSTRUMENT_MODEL)}")
 print(f"FIRMWARE_REVISION:   {get_attr_string(KTPUSBCHASSIS_ATTR_INSTRUMENT_FIRMWARE_REVISION)}")
 print(f"SERIAL_NUMBER:       {get_attr_string(KTPUSBCHASSIS_ATTR_SYSTEM_SERIAL_NUMBER)}")
-print(f"SIMULATE:            {'True' if get_attr_boolean(KTPUSBCHASSIS_ATTR_SIMULATE) else 'False'}")
+print(f"SIMULATE:            {get_attr_boolean(KTPUSBCHASSIS_ATTR_SIMULATE)}")
+
+print(f"FAN ALARM:           {get_attr_boolean(KTPUSBCHASSIS_ATTR_FAN_ALARM_OCCURRED)}")
+print(f"CLK ALARM:           {get_attr_boolean(KTPUSBCHASSIS_ATTR_REFCLK_ALARM_OCCURRED)}")
+print(f"TEMP ALARM:          {get_attr_boolean(KTPUSBCHASSIS_ATTR_TEMPERATURE_ALARM_OCCURRED)}")
+# print(f"VOLTAGE ALARM:       {get_attr_boolean(KTPUSBCHASSIS_ATTR_VOLTAGE_ALARM_OCCURRED)}")
+
 
 # Firmware up-to-date?
 is_fw_up_to_date = get_attr_boolean(KTPUSBCHASSIS_ATTR_FW_UP_TO_DATE)
