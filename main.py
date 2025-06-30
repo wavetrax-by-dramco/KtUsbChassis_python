@@ -19,29 +19,8 @@
 #               Read attributes and sensor data
 
 
-#  ____  ____      _    __  __  ____ ___
-# |  _ \|  _ \    / \  |  \/  |/ ___/ _ \
-# | | | | |_) |  / _ \ | |\/| | |  | | | |
-# | |_| |  _ <  / ___ \| |  | | |__| |_| |
-# |____/|_| \_\/_/   \_\_|  |_|\____\___/
-#                           research group
-#                             dramco.be/
-#
-#  KU Leuven - Technology Campus Gent,
-#  Gebroeders De Smetstraat 1,
-#  B-9000 Gent, Belgium
-#
-#         File: example.ext
-#      Created: 2025-06-30
-#       Author: Jarne Van Mulders
-#      Version: 0.1
-#
-#  Description: Communicate with chassis Keysight P5024A VNA
-
-
 import ctypes
 from visatype import *
-from chassis import *
 
 KTPUSBCHASSIS_ATTR_SPECIFIC_DRIVER_PREFIX           = 1050302
 KTPUSBCHASSIS_ATTR_SPECIFIC_DRIVER_REVISION         = 1050551
